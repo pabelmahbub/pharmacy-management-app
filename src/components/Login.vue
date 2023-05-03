@@ -1,7 +1,17 @@
 <template>
-  <h2>Login</h2>
+        
   <div class="login-page">
     <div class="login-card">
+
+        <div class="box" :class="{'box--right': movedToRight}">
+
+        </div>
+
+        <button @click="movedToRight = false">Move the box1</button>
+        <button @click="movedToRight = true">Move the box2</button>
+        
+        <button @click = "addModal=true" style="background-color:red">Show modal in Login</button>
+
         <div class="text-center">
             <img src="/img/lock1.webp" class="login-card__icon"/>
             <h2>User Login</h2>
@@ -9,10 +19,10 @@
 
         <form action="#" @submit.prevent="handleSubmit">
             <label>Email</label>
-            <input type="email" placeholder="Enter your email" v-model="formData.email"  required/>
+            <input type="email" placeholder="Enter your email" v-model="formData.email"  ref="email" required/>
 
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" v-model="formData.password" required/>
+            <input type="password" placeholder="Enter your password" v-model="formData.password" ref="password" required/>
 
             <button type="submit">Login</button>
 
@@ -31,39 +41,75 @@
 
         </form>
     </div>
+   
   </div>
+
+
+  <TheModal v-model = "addModal">
+  </TheModal>
+
+    
+
 </template>
 
 <script>
+
+import TheModal from './TheModal.vue';
 export default {
     data: () =>({
+      addModal: false,
       formData: {
           email: "",
           password:""
-      }
+      },
+      movedToRight: true,
+     
     }),
-
+components:{
+   TheModal,
+},
+inheritAttrs: false,
   methods: {
     handleSubmit(){
         console.log('Hello', this.formData);
         if(!this.formData.email){
-            alert("Email field can not be empty!");
+            //alert("Email field can not be empty!");
             //TODO: show error message on Toast
+            this.$eventBus.emit('toast', {type: "Error", message:"Password must be 6 characters long"});
+            this.$refs.email.focus();
             return;
         }
         if(this.formData.password.length < 6){
-            alert("Password should be six digit or more");
+            //alert("Password should be six digit or more");
             //TODO: show error message on Toast
+            this.$eventBus.emit('toast', {type: "Error", message:"Password must be 6 characters long"});
+            this.$refs.password.focus();
             return;
         }
 
         //TODO: call api
     }
+  },
+  addNew(){
+    console.log('added new')
   }
+  
+
 }
 </script>
 
 <style>
+.box {
+    width:55px;
+    height: 55px;
+    background-color: green;
+    margin-bottom: 22px;
+    transition: margin-left .5s;
+}
+
+.box--right {
+    margin-left: 230px;
+}
 
 .login-page {
     position: fixed;
